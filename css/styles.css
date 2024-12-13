@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, Georgia, 'Times New Roman', Times, serif;
+    margin: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+  
+  #chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .bar {
+    fill: rgb(46, 98, 141);
+    transition: fill 0.3s;
+  }
+  
+  .bar:hover {
+    fill: orange;
+  }
+  
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
