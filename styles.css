@@ -16,7 +16,7 @@ body {
   }
   
   .bar {
-    fill: steelblue;
+    fill: rgb(46, 86, 119);
     transition: fill 0.3s;
   }
   

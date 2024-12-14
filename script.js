@@ -1,10 +1,10 @@
-// Combined charts for bar chart, pie chart, and line chart
+// combined the js for differnet charts
 d3.csv('data/Baidu.csv').then(data => {
     // Parse data
     console.log("Raw Data",data)
     data.forEach(d => {
-        d["Baidu Core Revenue"] = +d["Baidu Core Revenue"] || 0; // Exact match
-    console.log(d["Baidu Core Revenue"]); // Log each value to confirm parsing
+        d["Baidu Core Revenue"] = +d["Baidu Core Revenue"] || 0; // fix csv issues
+    console.log(d["Baidu Core Revenue"]); // logged for bug fixing
       d["iQIYI Revenue"] = +d["iQIYI Revenue"] || 0;
       d["Baidu Core total cost and expenses"] = +d["Baidu Core total cost and expenses"] || 0;
       d["iQIYI total cost and expenses"] = +d["iQIYI total cost and expenses"] || 0;
@@ -13,11 +13,11 @@ d3.csv('data/Baidu.csv').then(data => {
     });
   
    // Dimensions
-const margin = { top: 20, right: 350, bottom: 80, left: 50 }; // Increased right margin for legend
-const width = 900 - margin.left - margin.right; // Adjusted width
+const margin = { top: 20, right: 350, bottom: 80, left: 50 }; // right has to be much longer for hte line chart legend
+const width = 900 - margin.left - margin.right; 
 const height = 400 - margin.top - margin.bottom;
 
-// Create container for line chart
+// line chart container
 const lineChartSvg = d3.select("#chart")
   .append("svg")
   .attr("width", width + margin.left + margin.right)
@@ -25,7 +25,7 @@ const lineChartSvg = d3.select("#chart")
   .append("g")
   .attr("transform", `translate(${margin.left},${margin.top})`);
 
-// Line Chart Scales
+// line scale
 const xLine = d3.scalePoint()
   .domain(data.map(d => d["Quarter Report Date"]))
   .range([0, width]);
@@ -41,7 +41,7 @@ const yLine = d3.scaleLinear()
   ))]).nice()
   .range([height, 0]);
 
-// Line Chart Axes
+// line aces
 lineChartSvg.append("g")
   .attr("transform", `translate(0,${height})`)
   .call(d3.axisBottom(xLine))
@@ -52,7 +52,7 @@ lineChartSvg.append("g")
 lineChartSvg.append("g")
   .call(d3.axisLeft(yLine));
 
-// Line Functions for Each Column
+// line functions 
 const createLine = key => d3.line()
   .x(d => xLine(d["Quarter Report Date"]))
   .y(d => yLine(d[key]));
@@ -78,7 +78,7 @@ keys.forEach(key => {
     .attr("stroke-width", 2)
     .attr("d", createLine(key));
 
-  // Add Points with Interactivity
+  // interactive for line chart
   lineChartSvg.selectAll(`.point-${key}`)
     .data(data)
     .enter()
@@ -104,7 +104,7 @@ keys.forEach(key => {
       lineChartSvg.selectAll(".tooltip").remove();
     });
 
-  // Add Legend
+  // legend
   lineChartSvg.append("text")
     .attr("x", width + 20)
     .attr("y", 20 + keys.indexOf(key) * 20)
@@ -112,7 +112,7 @@ keys.forEach(key => {
     .text(key);
 });
 
-// Create container for bar chart of Baidu Core Revenue
+// bar container
 const barChartSvg = d3.select("#chart")
   .append("svg")
   .attr("width", width + margin.left + margin.right)
@@ -120,7 +120,7 @@ const barChartSvg = d3.select("#chart")
   .append("g")
   .attr("transform", `translate(${margin.left},${margin.top})`);
 
-// Bar Chart Scales
+// scales
 const xBar = d3.scaleBand()
   .domain(data.map(d => d["Quarter Report Date"]))
   .range([0, width])
@@ -130,7 +130,7 @@ const yBar = d3.scaleLinear()
   .domain([0, d3.max(data, d => d["Baidu Core Revenue"])]).nice()
   .range([height, 0]);
 
-// Bar Chart Axes
+// axes
 barChartSvg.append("g")
   .attr("transform", `translate(0,${height})`)
   .call(d3.axisBottom(xBar))
@@ -141,7 +141,7 @@ barChartSvg.append("g")
 barChartSvg.append("g")
   .call(d3.axisLeft(yBar));
 
-// Add Bars
+// bar to chart
 barChartSvg.selectAll(".bar")
   .data(data)
   .enter()
@@ -153,7 +153,7 @@ barChartSvg.selectAll(".bar")
   .attr("height", d => height - yBar(d["Baidu Core Revenue"]))
   .attr("fill", "steelblue");
 
-// Pie Chart for Total Column Data
+
 const pieChartSvg = d3.select("#chart")
   .append("svg")
   .attr("width", 400)
@@ -161,59 +161,73 @@ const pieChartSvg = d3.select("#chart")
   .append("g")
   .attr("transform", `translate(200,200)`);
 
-// Calculate Totals
-const totals = {
-  "Baidu Core Revenue": d3.sum(data, d => d["Baidu Core Revenue"]),
-  "iQIYI Revenue": d3.sum(data, d => d["iQIYI Revenue"]),
-  "Baidu Core total cost and expenses": d3.sum(data, d => d["Baidu Core total cost and expenses"]),
-  "iQIYI total cost and expenses": d3.sum(data, d => d["iQIYI total cost and expenses"]),
-  "Operating Income Baidu Core": d3.sum(data, d => d["Operating Income Baidu Core"]),
-  "iQIYI Operating Income": d3.sum(data, d => d["iQIYI Operating Income"]),
-};
+  const totals = {
+    "Baidu Core Revenue": d3.sum(data, d => d["Baidu Core Revenue"]),
+    "iQIYI Revenue": d3.sum(data, d => d["iQIYI Revenue"]),
+    "Baidu Core total cost and expenses": d3.sum(data, d => d["Baidu Core total cost and expenses"]),
+    "iQIYI total cost and expenses": d3.sum(data, d => d["iQIYI total cost and expenses"]),
+    "Operating Income Baidu Core": d3.sum(data, d => d["Operating Income Baidu Core"]),
+    "iQIYI Operating Income": d3.sum(data, d => d["iQIYI Operating Income"]),
+  };
+  
+  // Format Data for Pie Chart
+  const pieData = Object.keys(totals).map(key => ({
+    category: key,
+    value: totals[key],
+  }));
+  
+  const pie = d3.pie().value(d => d.value);
+  
+  const arc = d3.arc()
+    .innerRadius(0)
+    .outerRadius(150);
+  
+  const color = d3.scaleOrdinal()
+    .domain(pieData.map(d => d.category))
+    .range(d3.schemeCategory10);
+  
+  // Draw Pie Slices with Interactivity
+  pieChartSvg.selectAll("path")
+    .data(pie(pieData))
+    .enter()
+    .append("path")
+    .attr("d", arc)
+    .attr("fill", d => color(d.data.category))
+    .on("mouseover", function(event, d) {
+      const total = d3.sum(pieData, d => d.value);
+      const percentage = ((d.data.value / total) * 100).toFixed(2);
+  
+      pieChartSvg.append("text")
+        .attr("class", "tooltip")
+        .attr("transform", `translate(${arc.centroid(d)})`)
+        .style("text-anchor", "middle")
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .text(`${percentage}%`);
+    })
+    .on("mouseout", function() {
+      pieChartSvg.selectAll(".tooltip").remove();
+    });
 
-// Format Data for Pie Chart
-const pieData = Object.keys(totals).map(key => ({
-  category: key,
-  value: totals[key],
-}));
-
-const pie = d3.pie().value(d => d.value);
-
-const arc = d3.arc()
-  .innerRadius(0)
-  .outerRadius(150);
-
-const color = d3.scaleOrdinal()
-  .domain(pieData.map(d => d.category))
-  .range(d3.schemeCategory10);
-
-// Draw Pie Slices
-pieChartSvg.selectAll("path")
-  .data(pie(pieData))
-  .enter()
-  .append("path")
-  .attr("d", arc)
-  .attr("fill", d => color(d.data.category));
-
-// Remove names inside pie chart slices
+// removing the pie chart text too big and not easy to read
 pieChartSvg.selectAll("text").remove();
 
-// Create Legend
+// pie chart legend
 const legend = d3.select("#chart")
   .append("div")
   .attr("class", "pie-legend");
 
-// Add Legend Items
+// add legend text
 pieData.forEach((d, i) => {
   const legendItem = legend.append("div")
     .attr("class", "pie-legend-item");
 
-  // Add Color Box
+  // add color box
   legendItem.append("div")
     .attr("class", "pie-legend-color")
     .style("background-color", color(d.category));
 
-  // Add Text
+  // add text
   legendItem.append("span")
     .text(`${d.category}: ${d.value}`);
 });
